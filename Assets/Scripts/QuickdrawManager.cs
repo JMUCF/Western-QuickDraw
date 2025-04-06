@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 
 public class QuickdrawManager : MonoBehaviour
@@ -27,13 +28,13 @@ public class QuickdrawManager : MonoBehaviour
     public float maxDelay = 3.5f;
     public float reactionTime = 1.0f;
 
-    // ===================== Internal State =================
+    // ===================== Internal Stuff =================
     private bool playerCanShoot = false;
     private float drawTime;
     private bool roundEnded = false;
-    [SerializeField] private AudioSource gunSounds;
-    [SerializeField] private AudioClip gunClick;
-    [SerializeField] private AudioClip gunShot;
+    public AudioSource gunSounds;
+    public AudioClip gunClick;
+    public AudioClip gunShot;
 
     void Start()
     {
@@ -113,6 +114,8 @@ public class QuickdrawManager : MonoBehaviour
             player.GetComponent<Character>().Die();
             yield return new WaitForSeconds(1f);
             resetButtonUI.SetActive(true);
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(resetButtonUI.gameObject);
         }
     }
 
