@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    public Sprite idleSprite;
-    public Sprite shootSprite;
-    public Sprite deadSprite;
-    private SpriteRenderer sr;
+    [SerializeField] private Sprite idleSprite;
+    [SerializeField] private Sprite shootSprite;
+    [SerializeField] private Sprite deadSprite;
+    [SerializeField] private SpriteRenderer sr;
 
     void Awake()
     {

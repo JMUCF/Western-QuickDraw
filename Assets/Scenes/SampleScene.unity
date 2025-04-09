@@ -922,10 +922,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1259908210}
   - component: {fileID: 1259908209}
+  - component: {fileID: 1259908213}
+  - component: {fileID: 1259908214}
   - component: {fileID: 1259908211}
   - component: {fileID: 1259908212}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: GameManagers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -945,20 +947,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 802457960}
   enemy: {fileID: 1159964403}
-  drawUI: {fileID: 2059733283}
-  resetButtonUI: {fileID: 1288856510}
-  fastestDraw: 1
-  fastestDrawText: {fileID: 964859849}
-  score: 0
-  scoreText: {fileID: 1102470082}
-  streak: 0
-  streakText: {fileID: 83863391}
   minDelay: 1.5
   maxDelay: 3.5
   reactionTime: 1
-  gunSounds: {fileID: 1259908212}
-  gunClick: {fileID: 8300000, guid: 6b605b12ccf37ce4a8481e4255fcf4c4, type: 3}
-  gunShot: {fileID: 8300000, guid: 7e40d00a7a4865c4a858b93caf08ffa7, type: 3}
+  uiManager: {fileID: 1259908213}
+  audioManager: {fileID: 1259908214}
 --- !u!4 &1259908210
 Transform:
   m_ObjectHideFlags: 0
@@ -1166,6 +1159,41 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1259908213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259908208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 762c75273f1e0154fa29d62215e6cba8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drawUI: {fileID: 2059733283}
+  resetButtonUI: {fileID: 1288856510}
+  fastestDrawText: {fileID: 964859849}
+  scoreText: {fileID: 1102470082}
+  streakText: {fileID: 83863391}
+  fastestDraw: 1
+  score: 0
+  streak: 0
+--- !u!114 &1259908214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259908208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5ef1ab3e9649334dae9bc4bceb43360, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunClick: {fileID: 8300000, guid: 6b605b12ccf37ce4a8481e4255fcf4c4, type: 3}
+  gunShot: {fileID: 8300000, guid: 7e40d00a7a4865c4a858b93caf08ffa7, type: 3}
+  poolSize: 10
 --- !u!1 &1288856510
 GameObject:
   m_ObjectHideFlags: 0

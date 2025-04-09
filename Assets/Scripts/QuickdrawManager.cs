@@ -1,64 +1,57 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using TMPro;
 
 public class QuickdrawManager : MonoBehaviour
 {
     // ===================== Characters =====================
     [Header("Characters")]
-    public GameObject player;
-    public GameObject enemy;
-
-    // ===================== UI Elements ====================
-    [Header("UI")]
-    public GameObject drawUI;
-    public GameObject resetButtonUI;
-    public float fastestDraw = 1f;
-    public TextMeshProUGUI fastestDrawText;
-    public int score;
-    public TextMeshProUGUI scoreText;
-    public int streak;
-    public TextMeshProUGUI streakText;
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject enemy;
 
     // ===================== Gameplay Settings ==============
     [Header("Gameplay Settings")]
-    public float minDelay = 1.5f;
-    public float maxDelay = 3.5f;
-    public float reactionTime = 1.0f;
+    [SerializeField] private float minDelay = 1.5f;
+    [SerializeField] private float maxDelay = 3.5f;
+    [SerializeField] private float reactionTime = 1.0f;
 
     // ===================== Internal Stuff =================
     private bool playerCanShoot = false;
     private float drawTime;
     private bool roundEnded = false;
-    public AudioSource gunSounds;
-    public AudioClip gunClick;
-    public AudioClip gunShot;
+    private Character playerCharacter;
+    private Character enemyCharacter;
+
+    // ===================== Managers =======================
+    [Header("Managers")]
+    public UIManager uiManager;
+    public AudioManager audioManager;
 
     void Start()
     {
         StartCoroutine(BeginRound());
+        playerCharacter = player.GetComponent<Character>();
+        enemyCharacter = enemy.GetComponent<Character>();
     }
 
     IEnumerator BeginRound()
     {
-        drawUI.SetActive(false);
+        uiManager.HideDrawUI();
         playerCanShoot = false;
-        gunSounds.PlayOneShot(gunClick, 1);
+        audioManager.PlayGunClick();
         float waitTime = Random.Range(minDelay, maxDelay);
         yield return new WaitForSeconds(waitTime);
 
-        drawUI.SetActive(true);
+        uiManager.ShowDrawUI();
         drawTime = Time.time;
         playerCanShoot = true;
-        enemy.GetComponent<Character>().Shoot();
+        enemyCharacter.Shoot();
 
         yield return new WaitForSeconds(reactionTime);
 
         if (!roundEnded)
         {
-            gunSounds.PlayOneShot(gunShot, 1);
+            audioManager.PlayGunShot();
             LoseRound("Too Slow!");
         }
     }
@@ -71,12 +64,11 @@ public class QuickdrawManager : MonoBehaviour
             {
                 LoseRound("Shot Too Early!");
             }
-
             else
             {
-                gunSounds.PlayOneShot(gunShot, 1);
+                audioManager.PlayGunShot();
                 float reaction = Time.time - drawTime;
-                player.GetComponent<Character>().Shoot();
+                playerCharacter.Shoot();
                 WinRound(reaction);
             }
         }
@@ -84,17 +76,17 @@ public class QuickdrawManager : MonoBehaviour
 
     void WinRound(float reaction)
     {
-        if (reaction < fastestDraw)
+        if (reaction < uiManager.fastestDraw)
         {
-            fastestDraw = reaction;
-            fastestDrawText.text = "Fastest Draw " + fastestDraw.ToString("F3");
+            uiManager.fastestDraw = reaction;
+            uiManager.UpdateFastestDrawText();
         }
 
-        streak++;
-        streakText.text = "Streak  " + streak.ToString("D2");
-        int scoreIncrease = Mathf.FloorToInt(streak * ((1f / reaction) * 20)); //multiplies streak by reaction speed, makes the number bigger and rounds down to nearest int
-        score += scoreIncrease;
-        scoreText.text = "Score     " + score.ToString("D5");
+        uiManager.streak++;
+        uiManager.UpdateStreakText();
+        int scoreIncrease = Mathf.FloorToInt(uiManager.streak * ((1f / reaction) * 20)); //multiplies streak by reaction speed, makes the number bigger and rounds down to nearest int
+        uiManager.score += scoreIncrease;
+        uiManager.UpdateScoreText();
 
         roundEnded = true;
         Debug.Log("You won! Reaction time: " + reaction.ToString("F3") + "s");
@@ -109,13 +101,11 @@ public class QuickdrawManager : MonoBehaviour
         IEnumerator Delay() //delay to stop you from immediately restarting round after death
         {
             roundEnded = true;
-            drawUI.SetActive(false);
+            uiManager.HideDrawUI();
             Debug.Log("You lost! Reason: " + reason);
             player.GetComponent<Character>().Die();
             yield return new WaitForSeconds(1f);
-            resetButtonUI.SetActive(true);
-            EventSystem.current.SetSelectedGameObject(null);
-            EventSystem.current.SetSelectedGameObject(resetButtonUI.gameObject);
+            uiManager.ShowResetButton();
         }
     }
 
@@ -129,8 +119,8 @@ public class QuickdrawManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
             enemy.GetComponent<Character>().Reset();
             player.GetComponent<Character>().Reset();
-            drawUI.SetActive(false);
-            if (streak <= 14)
+            uiManager.HideDrawUI();
+            if (uiManager.streak <= 14)
                 reactionTime -= 0.05f;
             else
                 reactionTime -= 0.01f;
@@ -148,12 +138,12 @@ public class QuickdrawManager : MonoBehaviour
             Debug.Log("in reset game");
             enemy.GetComponent<Character>().Reset();
             player.GetComponent<Character>().Reset();
-            resetButtonUI.SetActive(false);
+            uiManager.HideResetButton();
             reactionTime = 1f;
-            score = 0;
-            scoreText.text = "Score     " + score.ToString("D5");
-            streak = 0;
-            streakText.text = "Streak  " + streak.ToString("D2");
+            uiManager.score = 0;
+            uiManager.UpdateScoreText();
+            uiManager.streak = 0;
+            uiManager.UpdateStreakText();
             yield return new WaitForSeconds(1f);
             roundEnded = false;
             StartCoroutine(BeginRound());
